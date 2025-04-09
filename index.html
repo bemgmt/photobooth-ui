@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photobooth Payment Screen</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    #message {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    #startBtn {
+      display: none;
+      padding: 20px 40px;
+      font-size: 1.5em;
+      background-color: #00cc66;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="message">Waiting for payment...</div>
+  <button id="startBtn" onclick="launchBooth()">Start Photo Session</button>
+
+  <script>
+    // Polling for Zapier/webhook updates (could also use WebSocket or polling JSON endpoint)
+    async function checkPaymentStatus() {
+      try {
+        const response = await fetch("/payment-status.json"); // Replace with your server endpoint
+        const data = await response.json();
+        if (data.status === "paid") {
+          document.getElementById("message").textContent = "Payment Confirmed!";
+          document.getElementById("startBtn").style.display = "inline-block";
+        } else {
+          setTimeout(checkPaymentStatus, 3000); // poll again in 3 seconds
+        }
+      } catch (e) {
+        console.error("Error checking payment status", e);
+        setTimeout(checkPaymentStatus, 5000);
+      }
+    }
+
+    checkPaymentStatus();
+
+    function launchBooth() {
+      window.location.href = "lumabooth://"; // This opens the LumaBooth app if installed
+    }
+  </script>
+</body>
+</html>
