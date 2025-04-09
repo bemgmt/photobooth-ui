@@ -10,3 +10,8 @@ export default function handler(req, res) {
 
   res.status(405).json({ message: 'Method not allowed' });
 }
+const response = await fetch("/api/payment");
+const data = await response.json();
+if (data.status === "paid") {
+  // show the button
+}
